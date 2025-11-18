@@ -50,6 +50,9 @@ function createProductTile(product) {
 }
 
 export default async function decorate(block) {
+  // Add the carousel class so slider.js can find it
+  block.classList.add('carousel');
+  
   // Get the diet type from the block
   const dietType = block.querySelector(':scope div:nth-child(1) > div')?.textContent?.trim() || '';
   
