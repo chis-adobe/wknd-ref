@@ -1,5 +1,5 @@
 mountpoints:
   /:
-    url: "https://author-p130746-e1275972.adobeaemcloud.com/bin/franklin.delivery/chis-adobe/wknd-ref/main"
+    url: "https://author-p130746-e1275972.adobeaemcloud.com/bin/franklin.delivery/chis-adobe/wknd-ref/clients-metro"
     type: "markup"
     suffix: ".html"
