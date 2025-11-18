@@ -905,6 +905,19 @@
     ]
   },
   {
+    "id": "grocery-carousel",
+    "fields": [
+      {
+        "component": "text",
+        "name": "dietType",
+        "value": "",
+        "label": "Diet Type",
+        "description": "Filter grocery items by diet type (e.g., vegan, vegetarian, standard)",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "video",
     "fields": [
       {
