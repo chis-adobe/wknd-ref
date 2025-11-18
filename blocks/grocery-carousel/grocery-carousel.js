@@ -9,22 +9,18 @@ function createProductTile(product) {
   const tile = document.createElement('div');
   tile.className = 'grocery-product-tile';
   
-  const blockPath = window.location.pathname.includes('/blocks/') 
-    ? '' 
-    : '/blocks/grocery-carousel/';
-  
   tile.innerHTML = `
     <div class="product-badges">
       ${product.onSale ? '<div class="save-badge">Save</div>' : ''}
       ${product.isCanadian ? `
         <div class="canada-badge">
-          <img src="${blockPath}canada-flag.svg" alt="Product of Canada" width="24" height="24" />
+          <img src="${window.hlx.codeBasePath}/icons/canada-flag.svg" alt="Product of Canada" width="24" height="24" />
         </div>
       ` : ''}
     </div>
     
     <button type="button" class="favorite-btn" aria-label="Add to favourites">
-      <img src="${blockPath}heart-icon.svg" alt="" width="24" height="24" />
+      <img src="${window.hlx.codeBasePath}/icons/heart-icon.svg" alt="" width="24" height="24" />
     </button>
     
     <div class="product-image">
@@ -46,7 +42,7 @@ function createProductTile(product) {
     </div>
     
     <button class="add-to-cart-btn" aria-label="Add to cart">
-      <img src="${blockPath}cart-icon.svg" alt="" width="24" height="24" />
+      <img src="${window.hlx.codeBasePath}/icons/cart-icon.svg" alt="" width="24" height="24" />
     </button>
   `;
   
