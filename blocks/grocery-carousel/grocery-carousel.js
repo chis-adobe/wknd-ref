@@ -1,9 +1,7 @@
 import { getMetadata } from '../../scripts/aem.js';
+import { isAuthorEnvironment } from '../../scripts/scripts.js';
+import { getHostname } from '../../scripts/utils.js';
 import createSlider from '../../scripts/slider.js';
-
-function isAuthorEnvironment() {
-  return window.location.hostname.includes('author') || window.location.hostname === 'localhost';
-}
 
 function createProductTile(product) {
   const tile = document.createElement('div');
@@ -59,22 +57,31 @@ export default async function decorate(block) {
   // Clear the block
   block.innerHTML = '';
   
-  // Get hostname and construct GraphQL URL
-  const hostname = getMetadata('hostname');
-  const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '') || '';
+  // Get hostname following content-fragment pattern
+  const hostnameFromPlaceholders = await getHostname();
+  const hostname = hostnameFromPlaceholders ? hostnameFromPlaceholders : getMetadata('hostname');
+  const aemauthorurl = getMetadata('authorurl') || '';
+  const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '');
+  
   const graphqlPath = '/graphql/execute.json/wknd-shared/groceryItems';
   const isAuthor = isAuthorEnvironment();
   
-  // Construct the request URL
+  // Construct request URL based on environment
   let requestUrl = '';
-  if (isAuthor && hostname) {
-    requestUrl = `${hostname}${graphqlPath}${dietType ? `;dietType=${dietType}` : ''};ts=${Date.now()}`;
+  if (isAuthor && aemauthorurl) {
+    requestUrl = `${aemauthorurl}${graphqlPath}${dietType ? `;dietType=${dietType}` : ''};ts=${Date.now()}`;
   } else if (aempublishurl) {
     requestUrl = `${aempublishurl}${graphqlPath}${dietType ? `;dietType=${dietType}` : ''}`;
   }
   
   if (!requestUrl) {
-    console.error('Unable to construct GraphQL request URL');
+    console.error('Unable to construct GraphQL request URL', {
+      isAuthor,
+      aemauthorurl,
+      aempublishurl,
+      hostname,
+      dietType
+    });
     block.innerHTML = '<p>Error: Unable to load grocery items</p>';
     return;
   }
