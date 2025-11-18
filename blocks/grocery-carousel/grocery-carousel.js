@@ -6,8 +6,8 @@ export default async function decorate(block) {
   
   // Add simple test content
   block.innerHTML = `
-    <div style="padding: 20px; background: #f0f0f0; border: 2px solid #333;">
-      <h2>🛒 Grocery Carousel Test</h2>
+    <div style="padding: 20px; border: 2px solid #333;">
+      <h2>Grocery Carousel Test</h2>
       <p>If you can see this, the block is loading successfully!</p>
       <p>Block class: ${block.className}</p>
       <img src="${window.hlx.codeBasePath}/icons/cart-icon.svg" alt="Cart" width="48" height="48" />
