@@ -1,7 +1,6 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { isAuthorEnvironment } from '../../scripts/scripts.js';
 import { getHostname } from '../../scripts/utils.js';
-import createSlider from '../../scripts/slider.js';
 
 function createProductTile(product, isAuthor) {
   const tile = document.createElement('div');
@@ -131,17 +130,46 @@ export default async function decorate(block) {
     
     block.append(slider);
     
-    // Initialize the slider
-    createSlider(block);
-    
-    // Fix arrow button positioning by adding classes to parent containers
-    setTimeout(() => {
-      const prevContainer = block.querySelector('.button-container:has(.prev)');
-      const nextContainer = block.querySelector('.button-container:has(.next)');
+    // Create navigation arrows
+    const createArrow = (direction) => {
+      const container = document.createElement('p');
+      container.className = `button-container ${direction}`;
       
-      if (prevContainer) prevContainer.classList.add('prev');
-      if (nextContainer) nextContainer.classList.add('next');
-    }, 0);
+      const button = document.createElement('button');
+      button.className = `button ${direction}`;
+      button.type = 'button';
+      button.title = direction === 'prev' ? 'Previous' : 'Next';
+      
+      const img = document.createElement('img');
+      img.src = `${window.hlx.codeBasePath}/icons/${direction}.svg`;
+      img.alt = direction;
+      img.loading = 'lazy';
+      
+      button.append(img);
+      container.append(button);
+      
+      return container;
+    };
+    
+    const prevArrow = createArrow('prev');
+    const nextArrow = createArrow('next');
+    
+    block.append(nextArrow);
+    block.append(prevArrow);
+    
+    // Add click handlers
+    const prevBtn = prevArrow.querySelector('.button');
+    const nextBtn = nextArrow.querySelector('.button');
+    
+    prevBtn.addEventListener('click', () => {
+      const scrollAmount = slider.offsetWidth;
+      slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      const scrollAmount = slider.offsetWidth;
+      slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
     
   } catch (error) {
     console.error('Error fetching grocery items:', error);
