@@ -12,39 +12,41 @@ function createProductTile(product, isAuthor) {
   // Image has _publishUrl and _authorUrl properties
   const imgUrl = isAuthor ? product.image?._authorUrl : product.image?._publishUrl;
   
+  // Extract old price if it exists (looking for strikethrough pattern in price field)
+  const priceText = product.price || '';
+  const hasOldPrice = priceText.includes('$') && priceText.split('$').length > 2;
+  
   tile.innerHTML = `
     <div class="product-badges">
-      ${product.onSale ? '<div class="save-badge">Save</div>' : ''}
-      ${product.isCanadian ? `
-        <div class="canada-badge">
-          <img src="${window.hlx.codeBasePath}/icons/canada-flag.svg" alt="Product of Canada" width="24" height="24" />
-        </div>
-      ` : ''}
+      <div class="save-badge">Save</div>
+      ${product.isCanadian ? `<img src="${window.hlx.codeBasePath}/icons/canada-flag.svg" alt="Product of Canada" class="canada-badge" />` : ''}
     </div>
     
     <button type="button" class="favorite-btn" aria-label="Add to favourites">
-      <img src="${window.hlx.codeBasePath}/icons/heart-icon.svg" alt="" width="24" height="24" />
+      <img src="${window.hlx.codeBasePath}/icons/heart-icon.svg" alt="" width="20" height="20" />
     </button>
     
     <div class="product-image">
-      ${imgUrl ? `<img src="${imgUrl}" alt="${product.title || ''}" />` : ''}
+      ${imgUrl ? `<img src="${imgUrl}" alt="${product.title || ''}" />` : '<div class="image-placeholder"></div>'}
     </div>
     
     <div class="product-info">
-      ${product.brand ? `<div class="product-brand">${product.brand}</div>` : ''}
-      <div class="product-name">${product.title || ''}</div>
+      <div class="product-title-row">
+        ${product.brand ? `<span class="product-brand">${product.brand} </span>` : ''}
+        <span class="product-name">${product.title || ''}</span>
+      </div>
+      
       ${product.size ? `<div class="product-size">${product.size}</div>` : ''}
       
       <div class="product-pricing">
-        <div class="sale-price">${product.price || ''}</div>
+        ${product.oldPrice ? `<div class="old-price">${product.oldPrice}</div>` : ''}
+        <div class="sale-price">${priceText}</div>
         ${product.pricePerQuantity ? `<div class="unit-price">${product.pricePerQuantity}</div>` : ''}
       </div>
-      
-      ${product.hasVarieties ? '<button class="other-varieties">Other varieties</button>' : ''}
     </div>
     
     <button class="add-to-cart-btn" aria-label="Add to cart">
-      <img src="${window.hlx.codeBasePath}/icons/cart-icon.svg" alt="" width="24" height="24" />
+      <img src="${window.hlx.codeBasePath}/icons/cart-icon.svg" alt="" width="20" height="20" />
     </button>
   `;
   
