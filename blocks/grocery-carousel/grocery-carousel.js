@@ -39,7 +39,7 @@ function createProductTile(product, isAuthor) {
       ${product.size ? `<div class="product-size">${product.size}</div>` : ''}
       
       <div class="product-pricing">
-        ${product.oldPrice ? `<div class="old-price">${product.oldPrice}</div>` : ''}
+        ${product.previousPrice ? `<div class="old-price">${product.previousPrice}</div>` : ''}
         <div class="sale-price">${priceText}</div>
         ${product.pricePerQuantity ? `<div class="unit-price">${product.pricePerQuantity}</div>` : ''}
       </div>
