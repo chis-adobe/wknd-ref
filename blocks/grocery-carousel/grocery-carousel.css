@@ -40,8 +40,16 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: scroll;
+  overflow-y: hidden;
   scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.grocery-carousel .grocery-carousel-slider::-webkit-scrollbar,
+.grocery-carousel-wrapper .grocery-carousel-slider::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .grocery-carousel .grocery-carousel-slider li,
