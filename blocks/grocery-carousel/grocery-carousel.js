@@ -7,6 +7,8 @@ function createProductTile(product) {
   const tile = document.createElement('div');
   tile.className = 'grocery-product-tile';
   
+  // Map the actual field names from the GraphQL response
+  // Response fields: brand, title, size, price, pricePerQuantity, image
   tile.innerHTML = `
     <div class="product-badges">
       ${product.onSale ? '<div class="save-badge">Save</div>' : ''}
@@ -22,18 +24,17 @@ function createProductTile(product) {
     </button>
     
     <div class="product-image">
-      <img src="${product.image || ''}" alt="${product.name || ''}" />
+      <img src="${product.image || ''}" alt="${product.title || ''}" />
     </div>
     
     <div class="product-info">
       ${product.brand ? `<div class="product-brand">${product.brand}</div>` : ''}
-      <div class="product-name">${product.name || ''}</div>
+      <div class="product-name">${product.title || ''}</div>
       ${product.size ? `<div class="product-size">${product.size}</div>` : ''}
       
       <div class="product-pricing">
-        ${product.regularPrice ? `<div class="regular-price">$${product.regularPrice} ea.</div>` : ''}
-        <div class="sale-price">$${product.price || ''} ea.</div>
-        ${product.unitPrice ? `<div class="unit-price">${product.unitPrice}</div>` : ''}
+        <div class="sale-price">${product.price || ''}</div>
+        ${product.pricePerQuantity ? `<div class="unit-price">${product.pricePerQuantity}</div>` : ''}
       </div>
       
       ${product.hasVarieties ? '<button class="other-varieties">Other varieties</button>' : ''}
@@ -102,10 +103,11 @@ export default async function decorate(block) {
     const data = await response.json();
     
     // Extract grocery items from response
-    // Adjust the path based on your actual GraphQL response structure
-    const groceryItems = data?.data?.groceryItemsList?.items || data?.data?.groceryItems || [];
+    // The response structure is data.groceryItemList.items (note: singular "List")
+    const groceryItems = data?.data?.groceryItemList?.items || [];
     
     if (!groceryItems || groceryItems.length === 0) {
+      console.warn('No grocery items found in response:', data);
       block.innerHTML = '<p>No grocery items found</p>';
       return;
     }
