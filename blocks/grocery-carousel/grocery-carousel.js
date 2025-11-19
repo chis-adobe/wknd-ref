@@ -3,12 +3,15 @@ import { isAuthorEnvironment } from '../../scripts/scripts.js';
 import { getHostname } from '../../scripts/utils.js';
 import createSlider from '../../scripts/slider.js';
 
-function createProductTile(product) {
+function createProductTile(product, isAuthor) {
   const tile = document.createElement('div');
   tile.className = 'grocery-product-tile';
   
   // Map the actual field names from the GraphQL response
   // Response fields: brand, title, size, price, pricePerQuantity, image
+  // Image has _publishUrl and _authorUrl properties
+  const imgUrl = isAuthor ? product.image?._authorUrl : product.image?._publishUrl;
+  
   tile.innerHTML = `
     <div class="product-badges">
       ${product.onSale ? '<div class="save-badge">Save</div>' : ''}
@@ -24,7 +27,7 @@ function createProductTile(product) {
     </button>
     
     <div class="product-image">
-      <img src="${product.image || ''}" alt="${product.title || ''}" />
+      ${imgUrl ? `<img src="${imgUrl}" alt="${product.title || ''}" />` : ''}
     </div>
     
     <div class="product-info">
@@ -119,7 +122,7 @@ export default async function decorate(block) {
     // Create tiles for each grocery item
     groceryItems.forEach((item) => {
       const li = document.createElement('li');
-      const tile = createProductTile(item);
+      const tile = createProductTile(item, isAuthor);
       li.append(tile);
       slider.append(li);
     });
