@@ -284,17 +284,25 @@
   display: block;
 }
 
-.grocery-carousel-wrapper .grocery-carousel .button-container .prev,
-.grocery-carousel .button-container .prev {
+.grocery-carousel-wrapper .grocery-carousel .button-container.prev,
+.grocery-carousel .button-container.prev {
   left: 10px;
   right: auto;
+}
+
+.grocery-carousel-wrapper .grocery-carousel .button-container.next,
+.grocery-carousel .button-container.next {
+  right: 10px;
+  left: auto;
+}
+
+.grocery-carousel-wrapper .grocery-carousel .button-container .prev,
+.grocery-carousel .button-container .prev {
   margin: 0;
 }
 
 .grocery-carousel-wrapper .grocery-carousel .button-container .next,
 .grocery-carousel .button-container .next {
-  right: 10px;
-  left: auto;
   margin: 0;
 }
 
@@ -389,13 +397,13 @@
     max-height: 120px;
   }
   
-  .grocery-carousel-wrapper .grocery-carousel .button-container .prev,
-  .grocery-carousel .button-container .prev {
+  .grocery-carousel-wrapper .grocery-carousel .button-container.prev,
+  .grocery-carousel .button-container.prev {
     left: 5px;
   }
 
-  .grocery-carousel-wrapper .grocery-carousel .button-container .next,
-  .grocery-carousel .button-container .next {
+  .grocery-carousel-wrapper .grocery-carousel .button-container.next,
+  .grocery-carousel .button-container.next {
     right: 5px;
   }
 }
@@ -445,13 +453,13 @@
     font-size: 16px;
   }
   
-  .grocery-carousel-wrapper .grocery-carousel .button-container .prev,
-  .grocery-carousel .button-container .prev {
+  .grocery-carousel-wrapper .grocery-carousel .button-container.prev,
+  .grocery-carousel .button-container.prev {
     left: 5px;
   }
 
-  .grocery-carousel-wrapper .grocery-carousel .button-container .next,
-  .grocery-carousel .button-container .next {
+  .grocery-carousel-wrapper .grocery-carousel .button-container.next,
+  .grocery-carousel .button-container.next {
     right: 5px;
   }
 }

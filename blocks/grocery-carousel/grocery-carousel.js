@@ -134,6 +134,15 @@ export default async function decorate(block) {
     // Initialize the slider
     createSlider(block);
     
+    // Fix arrow button positioning by adding classes to parent containers
+    setTimeout(() => {
+      const prevContainer = block.querySelector('.button-container:has(.prev)');
+      const nextContainer = block.querySelector('.button-container:has(.next)');
+      
+      if (prevContainer) prevContainer.classList.add('prev');
+      if (nextContainer) nextContainer.classList.add('next');
+    }, 0);
+    
   } catch (error) {
     console.error('Error fetching grocery items:', error);
     block.innerHTML = '<p>Error loading grocery items</p>';
