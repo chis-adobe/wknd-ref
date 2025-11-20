@@ -65,7 +65,7 @@ export default async function decorate(block) {
   // Get hostname following content-fragment pattern
   const hostnameFromPlaceholders = await getHostname();
   const hostname = hostnameFromPlaceholders ? hostnameFromPlaceholders : getMetadata('hostname');
-  const aemauthorurl = getMetadata('authorurl') || '';
+  const aemauthorurl = getMetadata('authorurl') || 'https://author-p130746-e1275972.adobeaemcloud.com/';
   const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '');
   
   const graphqlPath = '/graphql/execute.json/wknd-shared/groceryItems';
