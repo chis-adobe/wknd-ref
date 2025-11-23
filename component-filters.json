@@ -67,7 +67,8 @@
       "image",
       "text",      
       "title",
-      "video"
+      "video",
+      "dm-template"
     ]
   },
   {
