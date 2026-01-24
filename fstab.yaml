@@ -1,5 +1,0 @@
-mountpoints:
-  /:
-    url: "https://author-p130746-e1275972.adobeaemcloud.com/bin/franklin.delivery/chis-adobe/wknd-ref/main"
-    type: "markup"
-    suffix: ".html"
