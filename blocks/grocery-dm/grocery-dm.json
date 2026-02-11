@@ -28,7 +28,7 @@
           "valueType": "string",
           "required": true,
           "validation": {
-            "rootPath": "/content/dam/metro/en/grocery/content-fragments"
+            "rootPath": "/content/dam/metro-site/en/grocery/content-fragments"
           }
         },
         {
@@ -39,7 +39,7 @@
           "valueType": "string",
           "required": true,
           "validation": {
-            "rootPath": "/content/dam/metro/en/grocery/Templates"
+            "rootPath": "/content/dam/metro-site/en/grocery/Templates"
           }
         }
       ]
