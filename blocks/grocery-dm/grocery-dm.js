@@ -84,30 +84,42 @@ export default async function decorate(block) {
     // Create parameter object from the grocery item response
     const paramObject = {};
     
+    // Helper function to convert dynamic URL
+    const convertDynamicUrl = (dynamicUrl) => {
+      if (!dynamicUrl) return null;
+      // Extract filename from path (last part after /)
+      const filename = dynamicUrl.split('/').pop();
+      // Remove file extension
+      const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+      // Remove leading underscore if present
+      const cleanName = nameWithoutExt.startsWith('_') ? nameWithoutExt.substring(1) : nameWithoutExt;
+      // Convert to final format
+      return `LiviuChisNA001/${cleanName}`;
+    };
+
     // Handle special fields first and remove them from the object
     if (groceryItem.image && typeof groceryItem.image === 'object' && groceryItem.image._dynamicUrl) {
-      // Convert dynamic URL from /adobe/dynamicmedia/deliver/dm-aid--xxx/filename.jpg
-      // to format: LiviuChisNA001/filename (without extension and leading underscore)
-      let dynamicUrl = groceryItem.image._dynamicUrl;
-      if (dynamicUrl) {
-        // Extract filename from path (last part after /)
-        const filename = dynamicUrl.split('/').pop();
-        // Remove file extension
-        const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
-        // Remove leading underscore if present
-        const cleanName = nameWithoutExt.startsWith('_') ? nameWithoutExt.substring(1) : nameWithoutExt;
-        // Convert to final format
-        paramObject.image = `LiviuChisNA001/${cleanName}`;
+      const converted = convertDynamicUrl(groceryItem.image._dynamicUrl);
+      if (converted) {
+        paramObject.image = converted;
       }
     }
     delete groceryItem.image;
+    
+    if (groceryItem.brandImage && typeof groceryItem.brandImage === 'object' && groceryItem.brandImage._dynamicUrl) {
+      const converted = convertDynamicUrl(groceryItem.brandImage._dynamicUrl);
+      if (converted) {
+        paramObject.brandImage = converted;
+      }
+    }
+    delete groceryItem.brandImage;
     
     if (groceryItem.fineprint && typeof groceryItem.fineprint === 'object' && groceryItem.fineprint.plaintext) {
       paramObject.fineprint = groceryItem.fineprint.plaintext;
     }
     delete groceryItem.fineprint;
     
-    // Process remaining fields (image and fineprint are now removed, so no checks needed)
+    // Process remaining fields (image, brandImage, and fineprint are now removed, so no checks needed)
     Object.keys(groceryItem).forEach(key => {
       const value = groceryItem[key];
       // Only include primitive values (string, number, boolean)
