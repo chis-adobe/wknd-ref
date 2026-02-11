@@ -86,7 +86,19 @@ export default async function decorate(block) {
     
     // Handle special fields first and remove them from the object
     if (groceryItem.image && typeof groceryItem.image === 'object' && groceryItem.image._dynamicUrl) {
-      paramObject.image = groceryItem.image._dynamicUrl;
+      // Convert dynamic URL from /adobe/dynamicmedia/deliver/dm-aid--xxx/filename.jpg
+      // to format: LiviuChisNA001/filename (without extension and leading underscore)
+      let dynamicUrl = groceryItem.image._dynamicUrl;
+      if (dynamicUrl) {
+        // Extract filename from path (last part after /)
+        const filename = dynamicUrl.split('/').pop();
+        // Remove file extension
+        const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+        // Remove leading underscore if present
+        const cleanName = nameWithoutExt.startsWith('_') ? nameWithoutExt.substring(1) : nameWithoutExt;
+        // Convert to final format
+        paramObject.image = `LiviuChisNA001/${cleanName}`;
+      }
     }
     delete groceryItem.image;
     
