@@ -8,7 +8,7 @@ import { getHostname } from '../../scripts/utils.js';
 export default async function decorate(block) {
   const CONFIG = {
     WRAPPER_SERVICE_URL: 'https://3635370-refdemoapigateway-stage.adobeioruntime.net/api/v1/web/ref-demo-api-gateway/fetch-cf',
-    GRAPHQL_QUERY: '/graphql/execute.json/wknd-shared/groceryItemByPath',
+    GRAPHQL_QUERY: '/graphql/execute.json/wknd-shared/groceryItemDmByPath',
   };
 
   // Get Content Fragment path from user input (first child - reference field)
