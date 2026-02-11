@@ -82,13 +82,23 @@ export default async function decorate(block) {
     }
 
     // Create parameter object from the grocery item response
-    // Use all key-value pairs from the response (excluding nested objects/arrays)
     const paramObject = {};
     
+    // Handle special fields first and remove them from the object
+    if (groceryItem.image && typeof groceryItem.image === 'object' && groceryItem.image._dynamicUrl) {
+      paramObject.image = groceryItem.image._dynamicUrl;
+    }
+    delete groceryItem.image;
+    
+    if (groceryItem.fineprint && typeof groceryItem.fineprint === 'object' && groceryItem.fineprint.plaintext) {
+      paramObject.fineprint = groceryItem.fineprint.plaintext;
+    }
+    delete groceryItem.fineprint;
+    
+    // Process remaining fields (image and fineprint are now removed, so no checks needed)
     Object.keys(groceryItem).forEach(key => {
       const value = groceryItem[key];
       // Only include primitive values (string, number, boolean)
-      // Exclude nested objects and arrays
       if (value !== null && value !== undefined && 
           (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')) {
         paramObject[key] = value;
