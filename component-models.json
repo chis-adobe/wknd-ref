@@ -1054,6 +1054,33 @@
       ]
   },
   {
+    "id": "grocery-dm",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "reference",
+        "label": "Content Fragment",
+        "description": "Select the grocery item Content Fragment",
+        "valueType": "string",
+        "required": true,
+        "validation": {
+          "rootPath": "/content/dam/metro/en/grocery/content-fragments"
+        }
+      },
+      {
+        "component": "aem-content",
+        "name": "dm_template_url",
+        "label": "Dynamic Media Template",
+        "description": "Select the Dynamic Media Template",
+        "valueType": "string",
+        "required": true,
+        "validation": {
+          "rootPath": "/content/dam/metro/en/grocery/Templates"
+        }
+      }
+    ]
+  },
+  {
     "id": "teaser",
     "fields": [
       {

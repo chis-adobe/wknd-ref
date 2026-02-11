@@ -22,7 +22,7 @@ function createProductTile(product, isAuthor) {
     </div>
     
     <button type="button" class="favorite-btn" aria-label="Add to favourites">
-      <img src="${window.hlx.codeBasePath}/icons/heart-icon.svg" alt="" width="20" height="20" />
+      <img src="${window.hlx.codeBasePath}/icons/heart-icon.svg" alt="" />
     </button>
     
     <div class="product-image">

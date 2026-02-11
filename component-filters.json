@@ -18,6 +18,7 @@
       "button",
       "dm-asset",
       "dm-template",
+      "grocery-dm",
       "fragment",
       "hero",
       "image",
@@ -68,7 +69,8 @@
       "text",      
       "title",
       "video",
-      "dm-template"
+      "dm-template",
+      "grocery-dm"
     ]
   },
   {

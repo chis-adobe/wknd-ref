@@ -1,0 +1,11 @@
+.grocery-dm {
+  position: relative;
+  width: 100%;
+}
+
+.grocery-dm-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
