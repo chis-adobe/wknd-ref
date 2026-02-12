@@ -1,9 +1,23 @@
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
 /**
  * @param {HTMLElement} block
  */
 export default function decorate(block) {
-  // Flyer block is a container that accepts grocery-dm blocks
-  // The children (grocery-dm blocks) will be rendered as-is
+  const ul = document.createElement('ul');
+  
+  // Process each child (grocery-dm block)
+  [...block.children].forEach((row) => {
+    const li = document.createElement('li');
+    
+    moveInstrumentation(row, li);
+    while (row.firstElementChild) li.append(row.firstElementChild);
+    
+    ul.append(li);
+  });
+  
+  block.textContent = '';
+  block.append(ul);
   block.classList.add('flyer-container');
 }
 
