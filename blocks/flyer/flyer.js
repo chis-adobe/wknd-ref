@@ -143,68 +143,21 @@ export default async function decorate(block) {
 
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    li.dataset.flyerRowIndex = String(i);
 
-    if (!contentPath || !templateURL) {
-      li.dataset.flyerRowIndex = String(i);
-      li.textContent = `Row ${i}`;
-      ul.append(li);
-      i += usedPair ? 2 : 1;
-      continue;
+    // Debug: show extracted values so you can confirm we're retrieving them correctly
+    const debug = document.createElement('div');
+    debug.className = 'flyer-row-debug';
+    debug.style.cssText = 'padding: 0.5rem; margin-bottom: 0.5rem; font-family: monospace; font-size: 12px; background: #f5f5f5; border: 1px solid #ddd;';
+    debug.innerHTML = `<div><strong>contentPath:</strong> ${contentPath ? contentPath.replace(/</g, '&lt;') : '(empty)'}</div><div><strong>templateURL:</strong> ${templateURL ? templateURL.replace(/</g, '&lt;') : '(empty)'}</div>`;
+    li.append(debug);
+
+    // Render row as-is: move row's children into the li so you can see the resulting HTML
+    while (row.firstElementChild) {
+      li.append(row.firstElementChild);
     }
 
-    let requestUrl = '';
-    let requestOptions = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
-    if (isAuthor && aemauthorurl) {
-      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${encodeURIComponent(contentPath)};ts=${Date.now()}`;
-    } else if (aempublishurl) {
-      requestUrl = CONFIG.WRAPPER_SERVICE_URL;
-      requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          graphQLPath: `${aempublishurl}${CONFIG.GRAPHQL_QUERY}`,
-          cfPath: contentPath,
-          variation: `master;ts=${Date.now()}`,
-        }),
-      };
-    }
-
-    try {
-      const response = requestUrl ? await fetch(requestUrl, requestOptions) : null;
-      if (!response?.ok) {
-        li.textContent = `Row ${i} (fetch failed)`;
-        ul.append(li);
-        i += usedPair ? 2 : 1;
-        continue;
-      }
-
-      const data = await response.json();
-      const item = data?.data?.groceryItemDmByPath?.item ?? data?.data?.groceryItemByPath?.item;
-      if (!item) {
-        li.textContent = `Row ${i} (no item)`;
-        ul.append(li);
-        i += usedPair ? 2 : 1;
-        continue;
-      }
-
-      const params = buildParamObject(item, isAuthor);
-      const finalUrl = buildDmImageUrl(templateURL, params);
-      const img = document.createElement('img');
-      img.className = 'grocery-dm-image';
-      img.src = finalUrl;
-      img.alt = (item.title || 'Grocery item') || '';
-      img.loading = 'lazy';
-      img.onerror = function onError() {
-        this.alt = 'Image failed to load';
-      };
-      li.append(img);
-      ul.append(li);
-    } catch (err) {
-      console.warn('Flyer row fetch error:', err);
-      li.textContent = `Row ${i} (error)`;
-      ul.append(li);
-    }
-
+    ul.append(li);
     i += usedPair ? 2 : 1;
   }
 
