@@ -67,33 +67,40 @@ function buildDmImageUrl(templateURL, params) {
 }
 
 /**
- * Extract content fragment path and DM template URL from a row element.
- * Tries: (1) two-column with value divs, (2) data-aue-prop, (3) all links in row (first=path, second=template).
+ * Normalize content fragment path: use pathname if full URL, strip trailing .html.
+ * @param {string} path
+ * @returns {string}
+ */
+function normalizeContentPath(path) {
+  if (!path || typeof path !== 'string') return '';
+  let p = path.trim();
+  if (p.startsWith('http')) {
+    try {
+      p = new URL(p).pathname;
+    } catch {
+      // keep as-is
+    }
+  }
+  return p.replace(/\.html$/i, '');
+}
+
+/**
+ * Extract content fragment path and DM template URL from a row.
+ * Row structure: two divs — first = reference (Content Fragment) link, second = template (DM) link.
  * @param {Element} row
  * @returns {{ contentPath: string, templateURL: string }}
  */
 function extractPathAndTemplateFromRow(row) {
-  let contentPath = '';
-  let templateURL = '';
-  const field0 = row?.children?.[0];
-  const field1 = row?.children?.[1];
-  if (field0?.children?.[1] && field1?.children?.[1]) {
-    const a0 = field0.children[1].querySelector('a');
-    const a1 = field1.children[1].querySelector('a');
-    contentPath = a0?.textContent?.trim() || a0?.href?.trim() || '';
-    templateURL = a1?.href?.trim() || a1?.textContent?.trim() || '';
-  }
-  if (!contentPath || !templateURL) {
-    const refEl = row?.querySelector?.('[data-aue-prop="reference"] a, [data-aue-prop="reference"]');
-    const tmplEl = row?.querySelector?.('[data-aue-prop="dm_template_url"] a, [data-aue-prop="dm_template_url"]');
-    if (refEl) contentPath = refEl.href?.trim() || refEl.textContent?.trim() || '';
-    if (tmplEl) templateURL = tmplEl.href?.trim() || tmplEl.textContent?.trim() || '';
-  }
-  if (!contentPath || !templateURL) {
-    const links = row?.querySelectorAll?.('a[href]') || [];
-    if (links.length >= 1) contentPath = contentPath || links[0].href?.trim() || links[0].textContent?.trim() || '';
-    if (links.length >= 2) templateURL = templateURL || links[1].href?.trim() || links[1].textContent?.trim() || '';
-  }
+  const firstDiv = row?.children?.[0];
+  const secondDiv = row?.children?.[1];
+  const refLink = firstDiv?.querySelector?.('a');
+  const templateLink = secondDiv?.querySelector?.('a');
+
+  const contentPath = normalizeContentPath(
+    refLink?.getAttribute('title')?.trim() || refLink?.href?.trim() || refLink?.textContent?.trim() || ''
+  );
+  const templateURL = (templateLink?.href?.trim() || templateLink?.textContent?.trim() || '').trim();
+
   return { contentPath, templateURL };
 }
 
@@ -110,36 +117,8 @@ export default async function decorate(block) {
   const ul = document.createElement('ul');
   const rows = [...block.children];
 
-  let i = 0;
-  while (i < rows.length) {
-    const row = rows[i];
-    let contentPath = '';
-    let templateURL = '';
-    let usedPair = false;
-
-    const one = extractPathAndTemplateFromRow(row);
-    contentPath = one.contentPath;
-    templateURL = one.templateURL;
-
-    if ((!contentPath || !templateURL) && i < rows.length - 1) {
-      const rowRef = rows[i];
-      const rowTemplate = rows[i + 1];
-      const colRef = rowRef?.children?.[1];
-      const colTemplate = rowTemplate?.children?.[1];
-      const refVal = colRef?.querySelector('a')?.textContent?.trim() || colRef?.querySelector('a')?.href?.trim() || '';
-      const tmplVal = colTemplate?.querySelector('a')?.href?.trim() || colTemplate?.querySelector('a')?.textContent?.trim() || '';
-      if (refVal) contentPath = contentPath || refVal;
-      if (tmplVal) templateURL = templateURL || tmplVal;
-      if (contentPath || templateURL) usedPair = true;
-    }
-
-    if (contentPath && contentPath.startsWith('http')) {
-      try {
-        contentPath = new URL(contentPath).pathname;
-      } catch {
-        // keep as-is
-      }
-    }
+  rows.forEach((row, i) => {
+    const { contentPath, templateURL } = extractPathAndTemplateFromRow(row);
 
     const li = document.createElement('li');
     moveInstrumentation(row, li);
@@ -152,14 +131,13 @@ export default async function decorate(block) {
     debug.innerHTML = `<div><strong>contentPath:</strong> ${contentPath ? contentPath.replace(/</g, '&lt;') : '(empty)'}</div><div><strong>templateURL:</strong> ${templateURL ? templateURL.replace(/</g, '&lt;') : '(empty)'}</div>`;
     li.append(debug);
 
-    // Render row as-is: move row's children into the li so you can see the resulting HTML
+    // Render row as-is: move row's children into the li
     while (row.firstElementChild) {
       li.append(row.firstElementChild);
     }
 
     ul.append(li);
-    i += usedPair ? 2 : 1;
-  }
+  });
 
   block.textContent = '';
   block.append(ul);
