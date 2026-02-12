@@ -84,33 +84,30 @@ export default async function decorate(block) {
     // Create parameter object from the grocery item response
     const paramObject = {};
     
-    // Helper function to convert dynamic URL
-    const convertDynamicUrl = (dynamicUrl) => {
-      if (!dynamicUrl) return null;
-      // Extract filename from path (last part after /)
-      const filename = dynamicUrl.split('/').pop();
-      // Remove file extension
-      const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
-      // Remove leading underscore if present
-      const cleanName = nameWithoutExt.startsWith('_') ? nameWithoutExt.substring(1) : nameWithoutExt;
-      // Convert to final format
-      return `LiviuChisNA001/${cleanName}`;
+    // Helper function to convert Scene7 URL from parent object
+    const convertDynamicUrl = (parentObj) => {
+      if (!parentObj || typeof parentObj !== 'object' || !parentObj._dmS7Url) {
+        return null;
+      }
+      const s7Url = parentObj._dmS7Url;
+      // Strip out https://s7d1.scene7.com/is/image/ prefix
+      const prefix = 'https://s7d1.scene7.com/is/image/';
+      if (s7Url.startsWith(prefix)) {
+        return s7Url.substring(prefix.length);
+      }
+      return s7Url;
     };
 
     // Handle special fields first and remove them from the object
-    if (groceryItem.image && typeof groceryItem.image === 'object' && groceryItem.image._dynamicUrl) {
-      const converted = convertDynamicUrl(groceryItem.image._dynamicUrl);
-      if (converted) {
-        paramObject.image = converted;
-      }
+    const convertedImage = convertDynamicUrl(groceryItem.image);
+    if (convertedImage) {
+      paramObject.image = convertedImage;
     }
     delete groceryItem.image;
     
-    if (groceryItem.brandImage && typeof groceryItem.brandImage === 'object' && groceryItem.brandImage._dynamicUrl) {
-      const converted = convertDynamicUrl(groceryItem.brandImage._dynamicUrl);
-      if (converted) {
-        paramObject.brandImage = converted;
-      }
+    const convertedBrandImage = convertDynamicUrl(groceryItem.brandImage);
+    if (convertedBrandImage) {
+      paramObject.brandImage = convertedBrandImage;
     }
     delete groceryItem.brandImage;
     
