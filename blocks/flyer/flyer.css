@@ -1,0 +1,11 @@
+.flyer {
+  position: relative;
+  width: 100%;
+}
+
+.flyer-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+

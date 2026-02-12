@@ -12,13 +12,13 @@
       "action-button",
       "cards",
       "carousel",
+      "flyer",
       "grocery-carousel",
       "columns",
       "contentfragment",
       "button",
       "dm-asset",
       "dm-template",
-      "grocery-dm",
       "fragment",
       "hero",
       "image",
@@ -50,6 +50,12 @@
     ]
   },
   {
+    "id": "flyer",
+    "components": [
+      "grocery-dm"
+    ]
+  },
+  {
     "id": "carousel",
     "components": [
       "card"
@@ -69,8 +75,7 @@
       "text",      
       "title",
       "video",
-      "dm-template",
-      "grocery-dm"
+      "dm-template"
     ]
   },
   {
