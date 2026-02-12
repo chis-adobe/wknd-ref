@@ -142,7 +142,7 @@ export default async function decorate(block) {
     let requestOptions = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
 
     if (isAuthor && aemauthorurl) {
-      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${encodeURIComponent(pathForRequest)};ts=${Date.now()}`;
+      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${pathForRequest};ts=${Date.now()}`;
     } else if (aempublishurl) {
       requestUrl = CONFIG.WRAPPER_SERVICE_URL;
       requestOptions = {
