@@ -11,6 +11,12 @@ export default async function decorate(block) {
     GRAPHQL_QUERY: '/graphql/execute.json/wknd-shared/groceryItemDmByPath',
   };
 
+  const hostnameFromPlaceholders = await getHostname();
+  const hostname = hostnameFromPlaceholders ? hostnameFromPlaceholders : getMetadata('hostname');
+  const aemauthorurl = getMetadata('authorurl') || 'https://author-p130746-e1275972.adobeaemcloud.com';
+  const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '');
+  const isAuthor = isAuthorEnvironment();
+
   const ul = document.createElement('ul');
   
   // Process each child (grocery-dm block)
@@ -27,14 +33,6 @@ export default async function decorate(block) {
       console.error('Missing required fields for grocery-dm block');
       continue;
     }
-
-    const hostnameFromPlaceholders = await getHostname();
-    const hostname = hostnameFromPlaceholders ? hostnameFromPlaceholders : getMetadata('hostname');
-    const aemauthorurl = getMetadata('authorurl') || 'https://author-p130746-e1275972.adobeaemcloud.com';
-    
-    const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '');
-    
-    const isAuthor = isAuthorEnvironment();
 
     // Prepare request configuration based on environment
     const requestConfig = isAuthor 
