@@ -117,27 +117,78 @@ export default async function decorate(block) {
   const ul = document.createElement('ul');
   const rows = [...block.children];
 
-  rows.forEach((row, i) => {
+  for (let i = 0; i < rows.length; i += 1) {
+    const row = rows[i];
     const { contentPath, templateURL } = extractPathAndTemplateFromRow(row);
 
     const li = document.createElement('li');
     moveInstrumentation(row, li);
     li.dataset.flyerRowIndex = String(i);
 
-    // Debug: show extracted values so you can confirm we're retrieving them correctly
-    const debug = document.createElement('div');
-    debug.className = 'flyer-row-debug';
-    debug.style.cssText = 'padding: 0.5rem; margin-bottom: 0.5rem; font-family: monospace; font-size: 12px; background: #f5f5f5; border: 1px solid #ddd;';
-    debug.innerHTML = `<div><strong>contentPath:</strong> ${contentPath ? contentPath.replace(/</g, '&lt;') : '(empty)'}</div><div><strong>templateURL:</strong> ${templateURL ? templateURL.replace(/</g, '&lt;') : '(empty)'}</div>`;
-    li.append(debug);
-
-    // Render row as-is: move row's children into the li
-    while (row.firstElementChild) {
-      li.append(row.firstElementChild);
+    if (!contentPath || !templateURL) {
+      while (row.firstElementChild) li.append(row.firstElementChild);
+      ul.append(li);
+      continue;
     }
 
-    ul.append(li);
-  });
+    let requestUrl = '';
+    let requestOptions = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
+
+    if (isAuthor && aemauthorurl) {
+      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${encodeURIComponent(contentPath)};ts=${Date.now()}`;
+    } else if (aempublishurl) {
+      requestUrl = CONFIG.WRAPPER_SERVICE_URL;
+      requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          graphQLPath: `${aempublishurl}${CONFIG.GRAPHQL_QUERY}`,
+          cfPath: contentPath,
+          variation: `master;ts=${Date.now()}`,
+        }),
+      };
+    }
+
+    try {
+      if (!requestUrl) {
+        li.textContent = `Row ${i}: no request URL (check hostname/author config)`;
+        ul.append(li);
+        continue;
+      }
+
+      const response = await fetch(requestUrl, requestOptions);
+      if (!response.ok) {
+        li.textContent = `Row ${i}: fetch failed ${response.status}`;
+        ul.append(li);
+        continue;
+      }
+
+      const data = await response.json();
+      const item = data?.data?.groceryItemDmByPath?.item ?? data?.data?.groceryItemByPath?.item;
+      if (!item) {
+        li.textContent = `Row ${i}: no item in response`;
+        ul.append(li);
+        continue;
+      }
+
+      const params = buildParamObject(item, isAuthor);
+      const finalUrl = buildDmImageUrl(templateURL, params);
+      const img = document.createElement('img');
+      img.className = 'grocery-dm-image';
+      img.src = finalUrl;
+      img.alt = (item.title || 'Grocery item') || '';
+      img.loading = 'lazy';
+      img.onerror = function onError() {
+        this.alt = 'Image failed to load';
+      };
+      li.append(img);
+      ul.append(li);
+    } catch (err) {
+      console.warn('Flyer row fetch error:', err);
+      li.textContent = `Row ${i}: error`;
+      ul.append(li);
+    }
+  }
 
   block.textContent = '';
   block.append(ul);
