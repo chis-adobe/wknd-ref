@@ -131,11 +131,18 @@ export default async function decorate(block) {
       continue;
     }
 
+    let pathForRequest = contentPath;
+    try {
+      pathForRequest = decodeURIComponent(contentPath);
+    } catch {
+      // use contentPath as-is if decoding fails
+    }
+
     let requestUrl = '';
     let requestOptions = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
 
     if (isAuthor && aemauthorurl) {
-      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${encodeURIComponent(contentPath)};ts=${Date.now()}`;
+      requestUrl = `${aemauthorurl}${CONFIG.GRAPHQL_QUERY};path=${encodeURIComponent(pathForRequest)};ts=${Date.now()}`;
     } else if (aempublishurl) {
       requestUrl = CONFIG.WRAPPER_SERVICE_URL;
       requestOptions = {
@@ -143,7 +150,7 @@ export default async function decorate(block) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           graphQLPath: `${aempublishurl}${CONFIG.GRAPHQL_QUERY}`,
-          cfPath: contentPath,
+          cfPath: pathForRequest,
           variation: `master;ts=${Date.now()}`,
         }),
       };
