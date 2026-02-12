@@ -129,9 +129,9 @@ export default async function decorate(block) {
       }
     });
 
-    // Construct the query string (preserving `$` in keys)
+    // Construct the query string with $ prefix on all keys
     const queryString = Object.entries(paramObject)
-      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .map(([key, value]) => `$${key}=${encodeURIComponent(value)}`)
       .join('&');
 
     // Combine with template URL
