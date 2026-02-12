@@ -9,3 +9,11 @@
   gap: 1rem;
 }
 
+/* Grocery DM item output (rendered by flyer block) */
+.flyer .grocery-dm-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
