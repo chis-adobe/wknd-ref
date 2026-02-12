@@ -19,18 +19,30 @@ export default async function decorate(block) {
 
   const ul = document.createElement('ul');
   
-  // Process each child (grocery-dm block)
-  for (const row of block.children) {
+  // Each grocery-dm block is two rows: row 0 = Content Fragment, row 1 = Dynamic Media Template
+  const rows = [...block.children];
+  for (let i = 0; i < rows.length - 1; i += 2) {
+    const rowRef = rows[i];
+    const rowTemplate = rows[i + 1];
     const li = document.createElement('li');
     
-    // Get Content Fragment path from row (first child - reference field)
-    const contentPath = row.querySelector(':scope div:nth-child(1) > div a')?.textContent?.trim();
+    // Get Content Fragment path from first row, second column (same structure as readBlockConfig)
+    const colRef = rowRef?.children?.[1];
+    let contentPath = colRef?.querySelector('a')?.textContent?.trim() || colRef?.querySelector('a')?.href?.trim();
+    if (contentPath && contentPath.startsWith('http')) {
+      try {
+        contentPath = new URL(contentPath).pathname;
+      } catch {
+        // keep as-is if URL parse fails
+      }
+    }
     
-    // Get Dynamic Media Template URL from row (second child - dm_template_url field)
-    const templateURL = row.querySelector(':scope div:nth-child(2) > div a')?.textContent?.trim();
+    // Get Dynamic Media Template URL from second row, second column
+    const colTemplate = rowTemplate?.children?.[1];
+    const templateURL = colTemplate?.querySelector('a')?.href?.trim() || colTemplate?.querySelector('a')?.textContent?.trim();
     
     if (!contentPath || !templateURL) {
-      console.error('Missing required fields for grocery-dm block');
+      console.warn('Flyer: missing required fields for grocery-dm at row pair', i, { contentPath: !!contentPath, templateURL: !!templateURL });
       continue;
     }
 
@@ -147,7 +159,7 @@ export default async function decorate(block) {
           this.alt = 'Fallback image - template image not correctly authored';
         };
         
-        moveInstrumentation(row, li);
+        moveInstrumentation(rowRef, li);
         li.append(finalImg);
         ul.append(li);
       }
