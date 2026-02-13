@@ -21,7 +21,8 @@ function stripS7Base(url) {
 
 /**
  * Build param object from Content Fragment item for Dynamic Media template.
- * image/brandImage use _dmS7Url (strip S7 base); fineprint → plaintext; rest passed as-is.
+ * Only image, brandImage and fineprint are hardcoded and treated specially; all other item keys
+ * are added as key-value pairs (with $ prefix on the key in the URL).
  * @param {Record<string, unknown>} item
  * @param {boolean} isAuthor
  * @returns {Record<string, string>}
@@ -44,9 +45,19 @@ function buildParamObject(item, isAuthor) {
   const fineprint = item.fineprint ?? item.plaintext ?? '';
   if (fineprint) params.fineprint = typeof fineprint === 'string' ? fineprint : (fineprint?.plaintext ?? '');
 
-  ['title', 'brand', 'price', 'previousPrice', 'pricePerQuantity', 'size'].forEach((key) => {
-    const val = item[key];
-    if (val != null && val !== '') params[key] = String(val);
+  const rest = { ...item };
+  delete rest.image;
+  delete rest.brandImage;
+  delete rest.fineprint;
+
+  Object.keys(rest).forEach((key) => {
+    const val = rest[key];
+    if (val == null || val === '') return;
+    if (typeof val === 'object' && val !== null && 'plaintext' in val) {
+      params[key] = val.plaintext ?? '';
+    } else if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+      params[key] = String(val);
+    }
   });
 
   return params;
