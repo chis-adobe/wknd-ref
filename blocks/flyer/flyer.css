@@ -3,8 +3,8 @@
   width: 100%;
 }
 
-/* Grid: 2 rows of 250px; flow by column so two 2x1s stack vertically next to a 2x2 */
-.flyer-container {
+/* Grid lives on the ul so the li elements are grid items; no bullets */
+.flyer-container > ul {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: 250px 250px;
