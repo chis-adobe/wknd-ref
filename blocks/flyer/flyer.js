@@ -33,12 +33,9 @@ function buildParamObject(item, isAuthor) {
 
   const image = item.image?.value ?? item.image;
   const brandImage = item.brandImage?.value ?? item.brandImage;
-  const getUrl = (obj) => {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj._dmS7Url ?? (isAuthor ? obj._authorUrl : obj._publishUrl) ?? obj._authorUrl ?? obj._publishUrl ?? '';
-  };
-  const imageUrl = getUrl(image);
-  const brandImageUrl = getUrl(brandImage);
+  const getDmS7Url = (obj) => (obj && typeof obj === 'object' && obj._dmS7Url) ? obj._dmS7Url : '';
+  const imageUrl = getDmS7Url(image);
+  const brandImageUrl = getDmS7Url(brandImage);
   if (imageUrl) params.image = stripS7Base(imageUrl);
   if (brandImageUrl) params.brandImage = stripS7Base(brandImageUrl);
 
