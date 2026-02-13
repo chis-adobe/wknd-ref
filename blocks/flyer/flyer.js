@@ -75,6 +75,23 @@ function buildDmImageUrl(templateURL, params) {
 }
 
 /**
+ * Get the template name from a template URL (last path segment, .html stripped) for use as a class name.
+ * @param {string} templateURL
+ * @returns {string}
+ */
+function getTemplateNameFromUrl(templateURL) {
+  if (!templateURL || typeof templateURL !== 'string') return '';
+  try {
+    const pathname = templateURL.startsWith('http') ? new URL(templateURL).pathname : templateURL;
+    const segments = pathname.split('/').filter(Boolean);
+    const last = segments[segments.length - 1] || '';
+    return last.replace(/\.html$/i, '');
+  } catch {
+    return '';
+  }
+}
+
+/**
  * Normalize content fragment path: use pathname if full URL, strip trailing .html.
  * @param {string} path
  * @returns {string}
@@ -188,6 +205,8 @@ export default async function decorate(block) {
 
       const params = buildParamObject(item, isAuthor);
       const finalUrl = buildDmImageUrl(templateURL, params);
+      const templateName = getTemplateNameFromUrl(templateURL);
+      if (templateName) li.classList.add(`flyer-template-${templateName}`);
       const img = document.createElement('img');
       img.className = 'grocery-dm-image';
       img.src = finalUrl;

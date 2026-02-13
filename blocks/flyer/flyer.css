@@ -3,14 +3,47 @@
   width: 100%;
 }
 
+/* Grid: 2 rows of 250px; flow by column so two 2x1s stack vertically next to a 2x2 */
 .flyer-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: 250px 250px;
   gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Grocery DM item output (rendered by flyer block) */
-.flyer .grocery-dm-image {
+/* 2x2: full height 500px (spans 2 rows) */
+.flyer-container .flyer-template-2x2 {
+  grid-row: span 2;
+  height: 500px;
+}
+
+.flyer-container .flyer-template-2x2 .grocery-dm-image {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* 2x1: half height 250px (1 row) */
+.flyer-container .flyer-template-2x1 {
+  grid-row: span 1;
+  height: 250px;
+}
+
+.flyer-container .flyer-template-2x1 .grocery-dm-image {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* Fallback for other template names */
+.flyer-container .grocery-dm-image {
   width: auto;
   height: auto;
   max-width: 100%;
