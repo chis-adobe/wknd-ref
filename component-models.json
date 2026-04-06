@@ -917,6 +917,18 @@
     ]
   },
   {
+    "id": "offer",
+    "fields": [
+      {
+        "component": "text",
+        "name": "path",
+        "label": "Content path",
+        "description": "Path to the synchrony offer content fragment (e.g. /content/dam/...)",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "video",
     "fields": [
       {
