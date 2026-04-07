@@ -21,11 +21,25 @@
       "id": "offer",
       "fields": [
         {
+          "component": "aem-content-fragment",
+          "name": "reference",
+          "label": "Offer content fragment",
+          "description": "Select the Synchrony offer Content Fragment",
+          "valueType": "string",
+          "required": true,
+          "variationName": "contentFragmentVariation",
+          "validation": {
+            "rootPath": "/content/dam"
+          }
+        },
+        {
           "component": "text",
-          "name": "path",
-          "label": "Content path",
-          "description": "Path to the synchrony offer content fragment (e.g. /content/dam/...)",
-          "valueType": "string"
+          "name": "contentFragmentVariation",
+          "label": "Selected variation",
+          "value": "",
+          "valueType": "string",
+          "description": "Persisted variation for publish; leave empty for master.",
+          "condition": { "==": [ { "var": "__alwaysFalse" }, true ] }
         }
       ]
     }

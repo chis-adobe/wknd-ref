@@ -1,5 +1,8 @@
 .offer {
+  box-sizing: border-box;
   width: 100%;
+  border: 1px solid #000;
+  padding: 1.25rem;
 }
 
 .offer-banner {
@@ -28,6 +31,40 @@
   margin: 0 0 1.25rem;
   line-height: 1.5;
   white-space: pre-wrap;
+}
+
+.offer-banner-cta {
+  margin: 0;
+}
+
+.offer-cta-button {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 0.65rem 1.35rem;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+a.offer-cta-button:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+a.offer-cta-button:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.offer-cta-button--static {
+  cursor: default;
 }
 
 .offer-banner-media {

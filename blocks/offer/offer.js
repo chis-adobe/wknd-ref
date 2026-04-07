@@ -48,14 +48,34 @@ function normalizePath(path) {
 }
 
 /**
+ * Resolve CTA URL from string or GraphQL ref shape ({ _publishUrl, _authorUrl }).
+ * @param {string | { _publishUrl?: string, _authorUrl?: string } | null | undefined} ctaUrl
+ * @param {boolean} isAuthor
+ * @returns {string}
+ */
+function resolveCtaUrl(ctaUrl, isAuthor) {
+  if (!ctaUrl) return '';
+  if (typeof ctaUrl === 'string') return ctaUrl.trim();
+  if (typeof ctaUrl === 'object') {
+    const url = isAuthor ? ctaUrl._authorUrl : ctaUrl._publishUrl;
+    return (url || ctaUrl._publishUrl || ctaUrl._authorUrl || '').trim();
+  }
+  return '';
+}
+
+/**
  * @param {HTMLElement} block
  * @returns {string}
  */
 function extractPathFromBlock(block) {
+  const refProp = block.querySelector('[data-aue-prop="reference"] a, [data-aue-prop="reference"]');
   const pathProp = block.querySelector('[data-aue-prop="path"] a, [data-aue-prop="path"]');
   const link = block.querySelector(':scope div:nth-child(1) a');
   const cell = block.querySelector(':scope div:nth-child(1) > div');
-  const raw = pathProp?.href?.trim()
+  const raw = refProp?.href?.trim()
+    || refProp?.textContent?.trim()
+    || refProp?.getAttribute?.('title')?.trim()
+    || pathProp?.href?.trim()
     || pathProp?.textContent?.trim()
     || link?.getAttribute('title')?.trim()
     || link?.href?.trim()
@@ -79,7 +99,7 @@ export default async function decorate(block) {
   block.innerHTML = '';
 
   if (!contentPath) {
-    block.innerHTML = '<p class="offer-error">Add a content path to the Offer block.</p>';
+    block.innerHTML = '<p class="offer-error">Select a content fragment for the Offer block.</p>';
     return;
   }
 
@@ -87,10 +107,10 @@ export default async function decorate(block) {
   const hostname = hostnameFromPlaceholders ?? getMetadata('hostname');
   const aemauthorurl = getMetadata('authorurl') || 'https://author-p130746-e1275972.adobeaemcloud.com';
   const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '') ?? '';
-  const isAuthor = isAuthorEnvironment();
+  const isAuthorEnv = isAuthorEnvironment();
 
   let requestUrl = '';
-  if (isAuthor && aemauthorurl) {
+  if (isAuthorEnv && aemauthorurl) {
     requestUrl = `${aemauthorurl}${GRAPHQL_PATH};path=${contentPath};ts=${Date.now()}`;
   } else if (aempublishurl) {
     requestUrl = `${aempublishurl}${GRAPHQL_PATH};path=${contentPath};ts=${Date.now()}`;
@@ -123,6 +143,7 @@ export default async function decorate(block) {
 
     const dmUrl = item.image?._dmS7Url || '';
     const smartCrops = item.image?._smartCrops;
+    const ctaHref = resolveCtaUrl(item.ctaUrl, isAuthorEnv);
 
     const banner = document.createElement('div');
     banner.className = 'offer-banner';
@@ -144,20 +165,24 @@ export default async function decorate(block) {
       textCol.append(p);
     }
 
-    if (item.ctaLabel && item.ctaUrl) {
+    if (item.ctaLabel && ctaHref) {
       const btnWrap = document.createElement('p');
-      btnWrap.className = 'button-container';
+      btnWrap.className = 'offer-banner-cta';
       const a = document.createElement('a');
-      a.className = 'button';
-      a.href = item.ctaUrl;
+      a.className = 'offer-cta-button';
+      a.href = ctaHref;
       a.textContent = item.ctaLabel;
+      if (ctaHref.startsWith('http')) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
       btnWrap.append(a);
       textCol.append(btnWrap);
     } else if (item.ctaLabel) {
       const btnWrap = document.createElement('p');
-      btnWrap.className = 'button-container';
+      btnWrap.className = 'offer-banner-cta';
       const span = document.createElement('span');
-      span.className = 'button';
+      span.className = 'offer-cta-button offer-cta-button--static';
       span.textContent = item.ctaLabel;
       btnWrap.append(span);
       textCol.append(btnWrap);
