@@ -93,9 +93,22 @@ function extractPathFromBlock(block) {
 
 /**
  * @param {HTMLElement} block
+ * @returns {string}
+ */
+function extractVariationFromBlock(block) {
+  const prop = block.querySelector('[data-aue-prop="contentFragmentVariation"]');
+  const row2 = block.querySelector(':scope div:nth-child(2) > div');
+  const raw = prop?.textContent?.trim() || row2?.textContent?.trim() || '';
+  const normalized = raw.toLowerCase().replace(/\s+/g, '_');
+  return normalized || 'master';
+}
+
+/**
+ * @param {HTMLElement} block
  */
 export default async function decorate(block) {
   const contentPath = extractPathFromBlock(block);
+  const variationName = extractVariationFromBlock(block);
   block.innerHTML = '';
 
   if (!contentPath) {
@@ -110,10 +123,11 @@ export default async function decorate(block) {
   const isAuthorEnv = isAuthorEnvironment();
 
   let requestUrl = '';
+  const variationParam = `;variation=${variationName}`;
   if (isAuthorEnv && aemauthorurl) {
-    requestUrl = `${aemauthorurl}${GRAPHQL_PATH};path=${contentPath};ts=${Date.now()}`;
+    requestUrl = `${aemauthorurl}${GRAPHQL_PATH};path=${contentPath}${variationParam};ts=${Date.now()}`;
   } else if (aempublishurl) {
-    requestUrl = `${aempublishurl}${GRAPHQL_PATH};path=${contentPath};ts=${Date.now()}`;
+    requestUrl = `${aempublishurl}${GRAPHQL_PATH};path=${contentPath}${variationParam};ts=${Date.now()}`;
   }
 
   if (!requestUrl) {
