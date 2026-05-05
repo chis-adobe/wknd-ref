@@ -1,8 +1,19 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { isAuthorEnvironment } from '../../scripts/scripts.js';
-import { getHostname } from '../../scripts/utils.js';
 
 const GRAPHQL_PATH = '/graphql/execute.json/ref-demo-eds/synchronyOfferByPath';
+/** Same program as fstab Franklin delivery (ref-demo GraphQL lives here). */
+const DEFAULT_AEM_AUTHOR = 'https://author-p130746-e1275972.adobeaemcloud.com';
+
+/**
+ * Publish host for the same AEM program as the author base URL (avoids wrong publish from placeholders).
+ * @param {string} authorBaseUrl
+ * @returns {string}
+ */
+function publishUrlFromAuthor(authorBaseUrl) {
+  const base = (authorBaseUrl || DEFAULT_AEM_AUTHOR).trim().replace(/\/$/, '');
+  return base.replace(/\/\/author-/i, '//publish-');
+}
 
 /**
  * @param {Array<{ name: string, width: number }>|undefined} smartCrops
@@ -116,10 +127,8 @@ export default async function decorate(block) {
     return;
   }
 
-  const hostnameFromPlaceholders = await getHostname();
-  const hostname = hostnameFromPlaceholders ?? getMetadata('hostname');
-  const aemauthorurl = getMetadata('authorurl') || 'https://author-p130746-e1275972.adobeaemcloud.com';
-  const aempublishurl = hostname?.replace('author', 'publish')?.replace(/\/$/, '') ?? '';
+  const aemauthorurl = (getMetadata('authorurl') || DEFAULT_AEM_AUTHOR).trim().replace(/\/$/, '');
+  const aempublishurl = publishUrlFromAuthor(aemauthorurl);
   const isAuthorEnv = isAuthorEnvironment();
 
   let requestUrl = '';
