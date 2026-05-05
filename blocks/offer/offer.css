@@ -75,6 +75,7 @@ a.offer-cta-button:focus-visible {
   align-items: center;
 }
 
+/* width/height attrs reserve aspect ratio; height:auto + max-width keep it responsive */
 .offer-banner-image {
   width: 100%;
   max-width: 560px;

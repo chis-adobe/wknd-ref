@@ -28,6 +28,22 @@ function pickSmartCropName(smartCrops, viewportWidth) {
 }
 
 /**
+ * Intrinsic width/height for <img> (Lighthouse CLS). CSS height:auto keeps layout flexible.
+ * Uses largest smart-crop width and 16:9 ratio when crops exist; sensible defaults otherwise.
+ * @param {Array<{ name: string, width: number }>|undefined} smartCrops
+ * @returns {{ width: number, height: number }}
+ */
+function intrinsicDimensionsFromSmartCrops(smartCrops) {
+  if (!smartCrops?.length) {
+    return { width: 1200, height: 675 };
+  }
+  const maxW = Math.max(...smartCrops.map((c) => Number(c.width) || 0));
+  const w = maxW > 0 ? maxW : 1200;
+  const h = Math.max(1, Math.round((w * 9) / 16));
+  return { width: w, height: h };
+}
+
+/**
  * @param {string} dmUrl
  * @param {string} cropName
  * @returns {string}
@@ -220,6 +236,9 @@ export default async function decorate(block) {
       img.alt = item.title || '';
       img.loading = 'eager';
       img.decoding = 'async';
+      const { width: intrinsicW, height: intrinsicH } = intrinsicDimensionsFromSmartCrops(smartCrops);
+      img.setAttribute('width', String(intrinsicW));
+      img.setAttribute('height', String(intrinsicH));
 
       const updateSrc = () => {
         const vw = window.innerWidth || document.documentElement.clientWidth || 1200;
